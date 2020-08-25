@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         // 设置默认的加密方式
+        // 明文 + 随机盐值 》加密存储
         return new BCryptPasswordEncoder();
         // return NoOpPasswordEncoder.getInstance();
     }
@@ -47,12 +49,16 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         String password = passwordEncoder().encode("1234");
         logger.info("加密之后存储的密码：" + password);
         // 用户信息存储在内存中
+        // 存储的密码必须是加密后的 否则报错：There is no PasswordEncoder
         auth.inMemoryAuthentication().withUser("luoqiu")
                 .password(password).authorities("ADMIN");
 
     }
 
     /**
+     * 当你认证成功后，springsecurity它会重定向到你上一次请求上
+     * 那页面中的请求呢？？
+     *
      * 资源权限配置（过滤器链）:
      * 1、被拦截的资源
      * 2、资源所对应的角色权限
@@ -68,9 +74,23 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         // super.configure(http);
         //http.httpBasic() // 采用 httpBasic 认证方式
         http.formLogin() // 表单认证
+                .loginPage("/login/page")
+                .loginProcessingUrl("/login/form") // 登录表单提交处理url 默认：/login
+                .usernameParameter("name") // 默认：username
+                .passwordParameter("pwd") // 默认：password
                 .and()
                 .authorizeRequests() // 授权请求
+                .antMatchers("/login/page").permitAll() // 放行/login/page不需要认证可访问
                 .anyRequest().authenticated() // 所有访问该应用的http请求都要通过身份认证才可以访问
         ;
+    }
+
+    /**
+     * 一般是针对静态资源放行
+     * @param web
+     */
+    @Override
+    public void configure(WebSecurity web)  {
+        web.ignoring().antMatchers("/dist/**", "/modules/**", "/plugins/**");
     }
 }
