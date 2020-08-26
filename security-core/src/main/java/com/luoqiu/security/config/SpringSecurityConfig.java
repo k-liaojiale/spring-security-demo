@@ -1,7 +1,9 @@
 package com.luoqiu.security.config;
 
+import com.luoqiu.security.properties.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,7 +25,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity // 启动 SpringSecurity 过滤器链功能
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private SecurityProperties securityProperties;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -72,17 +77,31 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // super.configure(http);
-        //http.httpBasic() // 采用 httpBasic 认证方式
-        http.formLogin() // 表单认证
-                .loginPage("/login/page")
-                .loginProcessingUrl("/login/form") // 登录表单提交处理url 默认：/login
-                .usernameParameter("name") // 默认：username
-                .passwordParameter("pwd") // 默认：password
+        // http.httpBasic() // 采用 httpBasic 认证方式
+
+// 固定配置
+//        http.formLogin() // 表单认证
+//                .loginPage("/login/page")
+//                .loginProcessingUrl("/login/form") // 登录表单提交处理url 默认：/login
+//                .usernameParameter("name") // 默认：username
+//                .passwordParameter("pwd") // 默认：password
+//                .and()
+//                .authorizeRequests() // 授权请求
+//                .antMatchers("/login/page").permitAll() // 放行/login/page不需要认证可访问
+//                .anyRequest().authenticated() // 所有访问该应用的http请求都要通过身份认证才可以访问
+//        ;
+
+          // 动态配置
+          http.formLogin() // 表单认证
+                .loginPage(securityProperties.getAuthentication().getLoginPage())
+                .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理url 默认：/login
+                .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) // 默认：username
+                .passwordParameter(securityProperties.getAuthentication().getPasswordParameter()) // 默认：password
                 .and()
                 .authorizeRequests() // 授权请求
-                .antMatchers("/login/page").permitAll() // 放行/login/page不需要认证可访问
+                .antMatchers(securityProperties.getAuthentication().getLoginPage()).permitAll() // 放行/login/page不需要认证可访问
                 .anyRequest().authenticated() // 所有访问该应用的http请求都要通过身份认证才可以访问
-        ;
+          ;
     }
 
     /**
@@ -91,6 +110,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web)  {
-        web.ignoring().antMatchers("/dist/**", "/modules/**", "/plugins/**");
+        // web.ignoring().antMatchers("/dist/**", "/modules/**", "/plugins/**");
+        web.ignoring().antMatchers(securityProperties.getAuthentication().getStaticPaths());
     }
 }
