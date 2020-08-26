@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private SecurityProperties securityProperties;
+
+    @Autowired
+    private UserDetailsService customUserDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,13 +55,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         // super.configure(auth);
         // auth.inMemoryAuthentication().withUser("luoqiu")
         //     .password("1234").authorities("ADMIN");
-        String password = passwordEncoder().encode("1234");
-        logger.info("加密之后存储的密码：" + password);
-        // 用户信息存储在内存中
-        // 存储的密码必须是加密后的 否则报错：There is no PasswordEncoder
-        auth.inMemoryAuthentication().withUser("luoqiu")
-                .password(password).authorities("ADMIN");
 
+//        String password = passwordEncoder().encode("1234");
+//        logger.info("加密之后存储的密码：" + password);
+//        // 用户信息存储在内存中
+//        // 存储的密码必须是加密后的 否则报错：There is no PasswordEncoder
+//        auth.inMemoryAuthentication().withUser("luoqiu")
+//                .password(password).authorities("ADMIN");
+
+        auth.userDetailsService(customUserDetailsService);
     }
 
     /**

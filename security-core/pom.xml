@@ -31,12 +31,6 @@
            <version>2.5</version>
        </dependency>
 
-       <dependency>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-configuration-processor</artifactId>
-           <optional>true</optional>
-       </dependency>
-
         <!--图形验证码
         <dependency>
             <groupId>com.github.penggle</groupId>
