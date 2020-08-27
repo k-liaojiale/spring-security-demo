@@ -19,6 +19,12 @@ public class AuthenticationProperties {
 
     private String[] staticPaths = {"/dist/**", "/modules/**", "/plugins/**"};
 
+    /**
+     * 登录成功后响应 JSON ,还是重定向
+     * 如果 application.yml 中没有配置,则取此初始值 REDIRECT
+     */
+    private LoginResponseType loginType = LoginResponseType.REDIRECT;
+
     public String getLoginPage() {
         return loginPage;
     }
@@ -57,5 +63,13 @@ public class AuthenticationProperties {
 
     public void setStaticPaths(String[] staticPaths) {
         this.staticPaths = staticPaths;
+    }
+
+    public LoginResponseType getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(LoginResponseType loginType) {
+        this.loginType = loginType;
     }
 }
