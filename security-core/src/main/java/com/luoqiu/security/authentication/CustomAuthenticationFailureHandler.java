@@ -32,7 +32,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        int i = 1 /0;
         if (LoginResponseType.JSON.equals(
                 securityProperties.getAuthentication().getLoginType()
         )) {

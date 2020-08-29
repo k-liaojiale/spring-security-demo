@@ -1,5 +1,6 @@
 package com.luoqiu.security.config;
 
+import com.luoqiu.security.authentication.code.ImageCodeValidateFilter;
 import com.luoqiu.security.properties.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * 安全控制中心
@@ -40,6 +42,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Autowired
+    private ImageCodeValidateFilter imageCodeValidateFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -105,7 +110,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
 
           // 动态配置
-          http.formLogin() // 表单认证
+          http.addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin() // 表单认证
                 .loginPage(securityProperties.getAuthentication().getLoginPage())
                 .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理url 默认：/login
                 .usernameParameter(securityProperties.getAuthentication().getUsernameParameter()) // 默认：username
@@ -114,7 +120,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests() // 授权请求
-                .antMatchers(securityProperties.getAuthentication().getLoginPage()).permitAll() // 放行/login/page不需要认证可访问
+                .antMatchers(securityProperties.getAuthentication().getLoginPage(),
+                        "/code/image").permitAll() // 放行/login/page不需要认证可访问
                 .anyRequest().authenticated() // 所有访问该应用的http请求都要通过身份认证才可以访问
           ;
     }
