@@ -1,6 +1,7 @@
 package com.luoqiu.security.authentication.code;
 
 import com.luoqiu.security.authentication.CustomAuthenticationFailureHandler;
+import com.luoqiu.security.authentication.exception.ValidateCodeException;
 import com.luoqiu.security.controller.CustomLoginController;
 import com.luoqiu.security.properties.SecurityProperties;
 import org.apache.commons.lang.StringUtils;

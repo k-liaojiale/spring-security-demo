@@ -1,4 +1,4 @@
-package com.luoqiu.security.authentication.code;
+package com.luoqiu.security.authentication.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

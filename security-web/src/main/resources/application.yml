@@ -5,6 +5,14 @@ server:
 spring:
   thymeleaf:
     cache: false # 关闭缓存
+  # 数据源配置
+  datasource:
+    username: root
+    password:
+    url: jdbc:mysql://localhost:3307/luoqiu-security?useSSL=false&serverTimezone=UTC&characterEncoding=UTF8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
 
 luoqiu:
   security:
