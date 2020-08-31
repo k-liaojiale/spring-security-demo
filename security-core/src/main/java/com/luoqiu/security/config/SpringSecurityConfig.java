@@ -154,12 +154,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 授权请求
                 .antMatchers(securityProperties.getAuthentication().getLoginPage(),
-                        "/code/image", "/mobile/page", "/code/mobile").permitAll() // 放行/login/page不需要认证可访问
+                             securityProperties.getAuthentication().getImageCodeUrl(),
+                             securityProperties.getAuthentication().getMobileCodeUrl(),
+                             securityProperties.getAuthentication().getMobilePage()).permitAll() // 放行/login/page不需要认证可访问
                 .anyRequest().authenticated() // 所有访问该应用的http请求都要通过身份认证才可以访问
                 .and()
                 .rememberMe() // 记住功能
                 .tokenRepository(jdbcTokenRepository()) // 保存登录信息
-                .tokenValiditySeconds(60 * 60 * 24 * 7) // 记住我有效时长
+                .tokenValiditySeconds(securityProperties.getAuthentication().getTokenValiditySeconds()) // 记住我有效时长
           ;
 
           // 将手机认证添加到过滤器链上

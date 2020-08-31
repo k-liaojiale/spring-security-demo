@@ -1,5 +1,8 @@
 package com.luoqiu.security.properties;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 认证相关动态配置
  * application.yml 没配置取默认值
@@ -7,6 +10,8 @@ package com.luoqiu.security.properties;
  * @author 落秋
  * @date 2020/8/26 17:08
  */
+@Getter
+@Setter
 public class AuthenticationProperties {
 
     private String loginPage = "/login/page";
@@ -25,51 +30,24 @@ public class AuthenticationProperties {
      */
     private LoginResponseType loginType = LoginResponseType.REDIRECT;
 
-    public String getLoginPage() {
-        return loginPage;
-    }
+    /**
+     * 获取图形验证码地址
+     */
+    private String imageCodeUrl = "/code/image";
 
-    public void setLoginPage(String loginPage) {
-        this.loginPage = loginPage;
-    }
+    /**
+     * 发送手机短信验证码地址
+     */
+    private String mobileCodeUrl = "/code/mobile";
 
-    public String getLoginProcessingUrl() {
-        return loginProcessingUrl;
-    }
+    /**
+     * 前往手机登录页面
+     */
+    private String mobilePage = "/mobile/page";
 
-    public void setLoginProcessingUrl(String loginProcessingUrl) {
-        this.loginProcessingUrl = loginProcessingUrl;
-    }
+    /**
+     * 记住我功能有效时长
+     */
+    private int tokenValiditySeconds = 604800;
 
-    public String getUsernameParameter() {
-        return usernameParameter;
-    }
-
-    public void setUsernameParameter(String usernameParameter) {
-        this.usernameParameter = usernameParameter;
-    }
-
-    public String getPasswordParameter() {
-        return passwordParameter;
-    }
-
-    public void setPasswordParameter(String passwordParameter) {
-        this.passwordParameter = passwordParameter;
-    }
-
-    public String[] getStaticPaths() {
-        return staticPaths;
-    }
-
-    public void setStaticPaths(String[] staticPaths) {
-        this.staticPaths = staticPaths;
-    }
-
-    public LoginResponseType getLoginType() {
-        return loginType;
-    }
-
-    public void setLoginType(LoginResponseType loginType) {
-        this.loginType = loginType;
-    }
 }
