@@ -3,6 +3,7 @@ package com.luoqiu.security.authentication;
 import com.luoqiu.base.result.LuoqiuResult;
 import com.luoqiu.security.properties.LoginResponseType;
 import com.luoqiu.security.properties.SecurityProperties;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -40,7 +41,13 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(json);
         } else {
-            super.setDefaultFailureUrl(securityProperties.getAuthentication().getLoginPage() + "?error");
+            // super.setDefaultFailureUrl(securityProperties.getAuthentication().getLoginPage() + "?error");
+            // 获取上一次请求路径
+            String referer = request.getHeader("Referer");
+            logger.info("referer:" + referer);
+            String lastUrl = StringUtils.substringBefore(referer, "?");
+            logger.info("lastUrl:" + lastUrl);
+            super.setDefaultFailureUrl(lastUrl + "?error");
             super.onAuthenticationFailure(request, response, exception);
         }
     }

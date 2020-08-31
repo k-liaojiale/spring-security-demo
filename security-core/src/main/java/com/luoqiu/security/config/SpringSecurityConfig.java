@@ -1,6 +1,8 @@
 package com.luoqiu.security.config;
 
 import com.luoqiu.security.authentication.code.ImageCodeValidateFilter;
+import com.luoqiu.security.authentication.mobile.MobileAuthenticationConfig;
+import com.luoqiu.security.authentication.mobile.MobileValidateFilter;
 import com.luoqiu.security.properties.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private DataSource dataSource;
+
+    // 校验手机验证码
+    @Autowired
+    private MobileValidateFilter mobileValidateFilter;
+
+    // 校验手机号是否存在 -> 手机号认证
+    @Autowired
+    private MobileAuthenticationConfig mobileAuthenticationConfig;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -131,7 +142,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
 
           // 动态配置
-          http.addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
+          http.addFilterBefore(mobileValidateFilter, UsernamePasswordAuthenticationFilter.class)
+              .addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin() // 表单认证
                 .loginPage(securityProperties.getAuthentication().getLoginPage())
                 .loginProcessingUrl(securityProperties.getAuthentication().getLoginProcessingUrl()) // 登录表单提交处理url 默认：/login
@@ -142,13 +154,16 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 授权请求
                 .antMatchers(securityProperties.getAuthentication().getLoginPage(),
-                        "/code/image").permitAll() // 放行/login/page不需要认证可访问
+                        "/code/image", "/mobile/page", "/code/mobile").permitAll() // 放行/login/page不需要认证可访问
                 .anyRequest().authenticated() // 所有访问该应用的http请求都要通过身份认证才可以访问
                 .and()
                 .rememberMe() // 记住功能
                 .tokenRepository(jdbcTokenRepository()) // 保存登录信息
                 .tokenValiditySeconds(60 * 60 * 24 * 7) // 记住我有效时长
           ;
+
+          // 将手机认证添加到过滤器链上
+          http.apply(mobileAuthenticationConfig);
     }
 
     /**

@@ -110,7 +110,7 @@
     // 发送验证码
     $("#sendCode").click(function () {
         var mobile = $('#mobile').val().trim();
-        if(mobile == '') {
+        if(mobile === '') {
             alert("手机号不能为空");
             return;
         }
